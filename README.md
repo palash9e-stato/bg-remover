@@ -1,0 +1,3 @@
+## BACK GROUND REMOVER
+
+This n8n workflow automates background removal for images uploaded to a specified Google Drive folder using the PhotoRoom API. It continuously monitors the input folder for new images -> downloads them -> and processes each image by removing the background -> adding optional padding -> and applying either the original image size or a fixed custom output size. The workflow supports transparent or colored backgrounds and outputs high-quality PNG files. Once processing is complete, the edited images are automatically uploaded to a chosen Google Drive folder. This solution is ideal for e-commerce product images, marketing assets, social media creatives, and bulk image processing, helping teams save time and eliminate repetitive manual editing tasks.
