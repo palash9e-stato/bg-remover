@@ -1,0 +1,584 @@
+{
+  "name": "bg-remover",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "42b02a2f-a642-42db-a565-fd2a01a26fb9",
+              "name": "bg_color",
+              "type": "string",
+              "value": "white"
+            },
+            {
+              "id": "f68b2280-ec85-4400-8a98-10e644b56076",
+              "name": "padding",
+              "type": "string",
+              "value": "5%"
+            },
+            {
+              "id": "8bdee3a1-9107-4bf8-adea-332d299e43ae",
+              "name": "keepInputSize",
+              "type": "boolean",
+              "value": true
+            },
+            {
+              "id": "89d9e4fb-ed14-4ee2-b6f0-73035bafbc39",
+              "name": "outputSize",
+              "type": "string",
+              "value": "1600x1600"
+            },
+            {
+              "id": "ad53bf64-5493-4c4d-a52c-cd4d657cc9f9",
+              "name": "inputFileName",
+              "type": "string",
+              "value": "={{ $json.originalFilename }}"
+            },
+            {
+              "id": "9fc440c6-289b-4a6a-8391-479a6660836f",
+              "name": "OutputDriveFolder",
+              "type": "string",
+              "value": "ENTER GOOGLE DRIVE FOLDER URL"
+            },
+            {
+              "id": "f0f1767a-b659-48c4-bef6-8ee4111cb939",
+              "name": "api-key",
+              "type": "string",
+              "value": "ENTER API KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d8bce5dc-5032-4e99-878e-b4148f740e7c",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        384,
+        928
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://image-api.photoroom.com/v2/edit",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "=sk_pr_default_aa30a3aac423c642aa4373d46a40140e3a201f0f"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "background.color",
+              "value": "={{ $json.bg_color }}"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "imageFile",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "padding",
+              "value": "={{ $json.padding }}"
+            },
+            {
+              "name": "outputSize",
+              "value": "={{ $json.Geometry }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "id": "22a334da-9227-4621-8c9a-3ba02b88809a",
+      "name": "remove background",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1696,
+        1056
+      ],
+      "typeVersion": 4.1
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Geometry",
+        "options": {
+          "includeBinary": true
+        }
+      },
+      "id": "d2e7e73f-d59a-4311-b569-207d0ed9da5c",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        752,
+        704
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://image-api.photoroom.com/v2/edit",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "=sk_pr_default_aa30a3aac423c642aa4373d46a40140e3a201f0f"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "background.color",
+              "value": "={{ $json.bg_color }}"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "imageFile",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "padding",
+              "value": "={{ $json.padding }}"
+            },
+            {
+              "name": "outputSize",
+              "value": "={{ $json.outputSize }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "id": "9fb0c3c4-28d6-4acc-b43b-4f6c3871cf06",
+      "name": "remove background fixed size",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1696,
+        832
+      ],
+      "typeVersion": 4.1
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "61844817-308e-41f8-8307-9235f2cc64ff",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        944,
+        912
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {}
+      },
+      "id": "35a6e43c-0c8d-4d9d-b1e3-e0abe8008221",
+      "name": "Download Image",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        384,
+        704
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "B2qRgLeC29ao8aMF",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "information"
+      },
+      "id": "a4436121-e4a1-4100-bf12-5c716e2a24bd",
+      "name": "Get Image Size",
+      "type": "n8n-nodes-base.editImage",
+      "position": [
+        576,
+        704
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1MG9ruq4xPGf3xAqQoPXAQPVjUkD4hvDv",
+          "mode": "list",
+          "cachedResultName": "to be augmented",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1MG9ruq4xPGf3xAqQoPXAQPVjUkD4hvDv"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "6899bd77-7dde-4dd7-91e8-43a3f1bbba88",
+      "name": "Watch for new images",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "position": [
+        32,
+        800
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "B2qRgLeC29ao8aMF",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "\n",
+        "height": 176,
+        "width": 198,
+        "color": 3
+      },
+      "id": "5be6ee0f-94e8-4faf-af81-7d1f02e82550",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -16,
+        784
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "d11ca8bb-0801-480f-b99a-249c5920b876",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.keepInputSize }}",
+              "rightValue": ""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a62a88a1-21c1-4481-875a-be32077d536e",
+      "name": "check which output size method is used",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1424,
+        928
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "cc9f87e5-5412-44db-b28e-e3040f998406",
+      "name": "loop all over your images",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        1168,
+        912
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 608,
+        "width": 2240,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        672
+      ],
+      "typeVersion": 1,
+      "id": "34cf17ff-9cbe-4f8f-a2fa-72cc76f638ca",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "name": "=BG-Removed-{{$json.inputFileName.split('.').slice(0, -1).join('.') }}.png",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/1MG9ruq4xPGf3xAqQoPXAQPVjUkD4hvDv?usp=sharing",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "id": "f0321572-a7e3-4b5d-828b-3f35746c574b",
+      "name": "Upload 2",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        2032,
+        1056
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "B2qRgLeC29ao8aMF",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "=BG-Removed-{{$json.inputFileName.split('.').slice(0, -1).join('.') }}.png",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ $json.OutputDriveFolder }}"
+        },
+        "options": {}
+      },
+      "id": "0347f14a-9387-4177-bad0-4a59ac564072",
+      "name": "Upload 1",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        2016,
+        832
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "B2qRgLeC29ao8aMF",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 176,
+        "width": 192,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1984,
+        1040
+      ],
+      "typeVersion": 1,
+      "id": "0253c3f0-1d86-4947-9e3a-ebc3ce96da14",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "loop all over your images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Get Image Size",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Image Size": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "remove background": {
+      "main": [
+        [
+          {
+            "node": "Upload 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Watch for new images": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "loop all over your images": {
+      "main": [
+        [],
+        [
+          {
+            "node": "check which output size method is used",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "remove background fixed size": {
+      "main": [
+        [
+          {
+            "node": "Upload 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check which output size method is used": {
+      "main": [
+        [
+          {
+            "node": "remove background fixed size",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "remove background",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload 2": {
+      "main": [
+        [
+          {
+            "node": "loop all over your images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload 1": {
+      "main": [
+        [
+          {
+            "node": "loop all over your images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cfd393be-af7e-4b44-a03c-096268fde014",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e101d3fb853740155a95b43a247f26ac9147d32bd17092d5ee9c914d31637b36"
+  },
+  "id": "MHIuQxB9M8dB1rok",
+  "tags": []
+}
